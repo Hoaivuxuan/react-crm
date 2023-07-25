@@ -1,21 +1,14 @@
-import logo from "./logo.svg";
-import "./App.css";
-
+import "./App.scss";
+import Header from "./compoents/Header";
+import TableUsers from "./compoents/TableUsers";
+import Container from "react-bootstrap/Container";
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">F
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello world</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app-container">
+      <Header></Header>
+      <Container className="pt-5">
+        <TableUsers></TableUsers>
+      </Container>
     </div>
   );
 }

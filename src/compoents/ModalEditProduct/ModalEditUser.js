@@ -1,38 +1,28 @@
 // import lib
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
 // import function in api file
-import { createUser } from "../services/UserService";
+import { createUser } from "../../services/UserService";
 //
-const ModalAddNew = (props) => {
-  const { show, handleClose, handUpdateTable } = props;
+const ModalEditUser = (props) => {
+  const { show, handleClose, dataUserEdit } = props;
   const [name, setName] = useState("");
   const [job, setJob] = useState("");
   //
-  const handleSaveUser = async () => {
-    let res = await createUser(name, job);
-    // test
-    console.log("check state: ", res);
-    //
-    if (res && res.id) {
-      //success
-      console.log("check id: ", res.id);
-      handleClose();
-      setName("");
-      setJob("");
-      toast.success("A User is created succeed!");
-      handUpdateTable({ first_name: name, id: res.id });
-    } else {
-      //error
-      toast.error("An error!");
+  const handleEditUser = () => {};
+  useEffect(() => {
+    if (show) {
+      setName(dataUserEdit.first_name);
     }
-  };
+  }, [dataUserEdit]);
+  //
+  console.log("check props: ", dataUserEdit);
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Add new user</Modal.Title>
+        <Modal.Title>Edit user information</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="body-add-new">
@@ -60,12 +50,12 @@ const ModalAddNew = (props) => {
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={() => handleSaveUser()}>
-          Save Changes
+        <Button variant="primary" onClick={() => handleEditUser()}>
+          Confirm
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default ModalAddNew;
+export default ModalEditUser;

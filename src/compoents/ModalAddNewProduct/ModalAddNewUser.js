@@ -1,28 +1,38 @@
 // import lib
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
 // import function in api file
-import { createUser } from "../services/UserService";
+import { createUser } from "../../services/UserService";
 //
-const ModalEditUser = (props) => {
-  const { show, handleClose, dataUserEdit } = props;
+const ModalAddNew = (props) => {
+  const { show, handleClose, handUpdateTable } = props;
   const [name, setName] = useState("");
   const [job, setJob] = useState("");
   //
-  const handleEditUser = () => {};
-  useEffect(() => {
-    if (show) {
-      setName(dataUserEdit.first_name);
+  const handleSaveUser = async () => {
+    let res = await createUser(name, job);
+    // test
+    console.log("check state: ", res);
+    //
+    if (res && res.id) {
+      //success
+      console.log("check id: ", res.id);
+      handleClose();
+      setName("");
+      setJob("");
+      toast.success("A User is created succeed!");
+      handUpdateTable({ first_name: name, id: res.id });
+    } else {
+      //error
+      toast.error("An error!");
     }
-  }, [dataUserEdit]);
-  //
-  console.log("check props: ", dataUserEdit);
+  };
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Edit user information</Modal.Title>
+        <Modal.Title>Add new user</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="body-add-new">
@@ -50,12 +60,12 @@ const ModalEditUser = (props) => {
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={() => handleEditUser()}>
-          Confirm
+        <Button variant="primary" onClick={() => handleSaveUser()}>
+          Save Changes
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default ModalEditUser;
+export default ModalAddNew;

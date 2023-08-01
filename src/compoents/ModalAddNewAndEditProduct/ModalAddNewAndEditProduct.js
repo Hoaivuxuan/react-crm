@@ -1,5 +1,5 @@
 // import library
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -13,10 +13,116 @@ import { createUser } from "../../services/UserService";
 //
 const ModalAddNewAndEditProduct = (props) => {
   // props
-  const { show, handleClose, handleUpdate } = props;
-  //
-  
-  //
+  const { show, handleClose, handleUpdate, rowData } = props;
+  // useEffect
+  useEffect(() => {
+    if (show && rowData) {
+      formik.setValues(rowData);
+    } else {
+      formik.resetForm();
+    }
+  }, [show, rowData]);
+
+  // Toastify
+  const toast = useRef(null);
+  const showSuccess = () => {
+    toast.current.show({
+      severity: "success",
+      detail: "Lưu thành công",
+    });
+  };
+  const showError = () => {
+    toast.current.show({
+      severity: "error",
+      detail: "Id đã tồn tại, xin hãy chọn mã khác",
+    });
+  };
+  const formik = useFormik({
+    initialValues: {
+      id: "",
+      name: "",
+      productLine: "",
+    },
+    //
+    validate: (data) => {
+      let errors = {};
+
+      if (!data.id) {
+        errors.id = "Mã không được trống";
+      } else if (/[!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?]+/.test(data.id)) {
+        errors.id = 'Mã chỉ cho phép chữ, số, dấu "-"và dấu "_"';
+      }
+      if (!data.name) {
+        errors.name = "Tên không được trống";
+      }
+      if (!data.productLine) {
+        errors.productLine = "Dòng sản phẩm không được trống";
+      }
+
+      return errors;
+    },
+    // if validate is accepted => call onSubmit
+    onSubmit: (data) => {
+      if (rowData) {
+        let productArray = JSON.parse(localStorage.getItem("Product")) || [];
+        // Search for available products in the productArray . array
+        const existingProductIndex = productArray.findIndex(
+          (product) => product.id === data.id
+        );
+        console.log(data);
+        if (existingProductIndex === -1) {
+          // If the product is not found, add a new product to the array
+          let newProductArray = [data, ...productArray];
+          localStorage.setItem("Product", JSON.stringify(newProductArray));
+        } else {
+          // If a product is found, update the information of an existing product
+          productArray[existingProductIndex] = data;
+        }
+        // Write the new productArray array to localStorage
+        localStorage.setItem("Product", JSON.stringify(productArray));
+        // Close modal and show success message
+        handleClose(false);
+        showSuccess();
+        // Call the handleUpdate function to update the product list on the interface
+        handleUpdate();
+      } else {
+        let productArray = JSON.parse(localStorage.getItem("Product"));
+        if (productArray == null) {
+          let firstProduct = [data];
+          localStorage.setItem("Product", JSON.stringify(firstProduct));
+        } else {
+          let checkCode = true;
+          productArray.forEach((e) => {
+            if (e.id === data.id) {
+              checkCode = false;
+            }
+          });
+          if (checkCode) {
+            let newProductArray = [data, ...productArray];
+            localStorage.setItem("Product", JSON.stringify(newProductArray));
+            handleClose(false);
+            showSuccess();
+          } else {
+            showError();
+          }
+        }
+        handleUpdate();
+      }
+    },
+  });
+
+  const isFormFieldValid = (name) =>
+    !!(formik.touched[name] && formik.errors[name]);
+  const getFormErrorMessage = (name) => {
+    return (
+      isFormFieldValid(name) && (
+        <small className="p-error" style={{ fontSize: "12px" }}>
+          {formik.errors[name]}
+        </small>
+      )
+    );
+  };
+  // component
   const footerButton = () => {
     return (
       <div>
@@ -45,87 +151,13 @@ const ModalAddNewAndEditProduct = (props) => {
       </div>
     );
   };
-  //
-  const toast = useRef(null);
-  const showSuccess = () => {
-    toast.current.show({
-      severity: "success",
-      detail: "Lưu thành công",
-    });
-  };
-  const showError = () => {
-    toast.current.show({
-      severity: "error",
-      detail: "Id đã tồn tại, xin hãy chọn mã khác",
-    });
-  };
-  const formik = useFormik({
-    initialValues: {
-      id: "",
-      name: "",
-      productLine: "",
-    },
-    //
-    validateOnChange:true,
-    validate: (data) => {
-      let errors = {};
-
-      if (!data.id) {
-        errors.id = "Mã không được trống";
-      } else if (/[!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?]+/.test(data.id)) {
-        errors.id = 'Mã chỉ cho phép chữ, số, dấu "-"và dấu "_"';
-      }
-      if (!data.name) {
-        errors.name = "Tên không được trống";
-      }
-      if (!data.productLine) {
-        errors.productLine = "Dòng sản phẩm không được trống";
-      }
-
-      return errors;
-    },
-    //
-    onSubmit: (data) => {
-      let productArray = JSON.parse(localStorage.getItem("Product"));
-      if (productArray == null) {
-        let firstProduct = [data];
-        localStorage.setItem("Product", JSON.stringify(firstProduct));
-      } else {
-        let checkCode = true;
-        productArray.forEach((e) => {
-          if (e.id === data.id) {
-            checkCode = false;
-          }
-        });
-        if (checkCode) {
-          let newProductArray = [data, ...productArray];
-          localStorage.setItem("Product", JSON.stringify(newProductArray));
-          handleClose(false);
-          showSuccess();
-        } else {
-          showError();
-        }
-      }
-      handleUpdate();
-    },
-  });
-
-  const isFormFieldValid = (name) =>
-    !!(formik.touched[name] && formik.errors[name]);
-  const getFormErrorMessage = (name) => {
-    return (
-      isFormFieldValid(name) && (
-        <small className="p-error" style={{ fontSize: "12px" }}>
-          {formik.errors[name]}
-        </small>
-      )
-    );
-  };
   return (
     <div>
       <Dialog
         header={
-          <div className="text-center text-2xl py-1">Thêm mới sản phẩm</div>
+          <div className="text-center text-2xl py-1">
+            {rowData ? "Chỉnh sửa sản phẩm" : "Thêm mới sản phẩm"}
+          </div>
         }
         visible={show}
         onHide={handleClose}
@@ -153,9 +185,8 @@ const ModalAddNewAndEditProduct = (props) => {
                     <InputText
                       id="id"
                       name="id"
-                      // value={formik.values.id}
+                      value={formik.values.id}
                       onChange={formik.handleChange}
-                      
                     />
                   </span>
                   {getFormErrorMessage("id")}
@@ -177,9 +208,8 @@ const ModalAddNewAndEditProduct = (props) => {
                     <InputText
                       id="name"
                       name="name"
-                      // value={formik.values.name}
+                      value={formik.values.name}
                       onChange={formik.handleChange}
-                      
                     />
                   </span>
                   {getFormErrorMessage("name")}
@@ -201,9 +231,8 @@ const ModalAddNewAndEditProduct = (props) => {
                     <InputText
                       id="productLine"
                       name="productLine"
-                      // value={formik.values.family}
+                      value={formik.values.productLine}
                       onChange={formik.handleChange}
-                      
                     />
                   </span>
                   {getFormErrorMessage("productLine")}
@@ -222,7 +251,12 @@ const ModalAddNewAndEditProduct = (props) => {
               <div className="pt-2 flex-1 overflow-hidden field-content">
                 <div className="field">
                   <span className="">
-                    <InputText id="warranty" onChange={formik.handleChange} />
+                    <InputText
+                      id="warrantyPeriod"
+                      name="warrantyPeriod"
+                      value={formik.values.warrantyPeriod}
+                      onChange={formik.handleChange}
+                    />
                   </span>
                 </div>
               </div>
@@ -239,7 +273,12 @@ const ModalAddNewAndEditProduct = (props) => {
               <div className="pt-2 flex-1 overflow-hidden field-content">
                 <div className="field">
                   <span className="">
-                    <InputText id="solution" onChange={formik.handleChange} />
+                    <InputText
+                      id="solutionType"
+                      name="solutionType"
+                      value={formik.values.solutionType}
+                      onChange={formik.handleChange}
+                    />
                   </span>
                 </div>
               </div>
@@ -256,7 +295,12 @@ const ModalAddNewAndEditProduct = (props) => {
               <div className="pt-2 flex-1 overflow-hidden field-content">
                 <div className="field">
                   <span className="">
-                    <InputText id="unit" onChange={formik.handleChange} />
+                    <InputText
+                      id="warrantyType"
+                      name="warrantyType"
+                      value={formik.values.warrantyType}
+                      onChange={formik.handleChange}
+                    />
                   </span>
                 </div>
               </div>
@@ -274,8 +318,11 @@ const ModalAddNewAndEditProduct = (props) => {
                 <div className="field">
                   <span className="">
                     <InputTextarea
+                      id="describe"
+                      name="describe"
                       rows={5}
                       cols={30}
+                      value={formik.values.describe}
                       onChange={formik.handleChange}
                     />
                   </span>

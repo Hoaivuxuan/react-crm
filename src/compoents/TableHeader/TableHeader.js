@@ -1,14 +1,29 @@
+// import lib
 import { useEffect, useState } from "react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { FilterMatchMode, FilterOperator } from "primereact/api";
+// import file
 import ModalAddNewAndEditProduct from "../ModalAddNewAndEditProduct/ModalAddNewAndEditProduct";
 import "./TableHeader.scss";
 //
-const TableHeader = ({ handleUpdate }) => {
-  const [isShowModalAdd_EditProduct, setIsShowModalAdd_EditProduct] = useState();
+const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
+  const [isShowModalAdd_EditProduct, setIsShowModalAdd_EditProduct] =
+    useState();
   //
   const handleClose = () => {
     setIsShowModalAdd_EditProduct(false);
+  };
+  //
+  const [globalFilterValue, setGlobalFilterValue] = useState("");
+  //
+  const onGlobalFilterChange = (e) => {
+    const value = e.target.value;
+    let _filters = { ...filters };
+    _filters["global"].value = value;
+
+    updateFilters(_filters);
+    setGlobalFilterValue(value);
   };
   //
   return (
@@ -81,7 +96,11 @@ const TableHeader = ({ handleUpdate }) => {
         <div className="search-wrapper flex justify-content-end align-items-center">
           <span className="p-input-icon-left">
             <i className="pi pi-search" />
-            <InputText placeholder="Tìm kiếm..." />
+            <InputText
+              value={globalFilterValue}
+              onChange={onGlobalFilterChange}
+              placeholder="Tìm kiếm"
+            />
           </span>
         </div>
       </div>

@@ -1,30 +1,16 @@
-import { ToastContainer } from "react-toastify";
 //
 import "./App.scss";
-import Header from "./compoents/Header/Header";
+import Header from "./compoents/TableHeader/TableHeader";
 import TableProducts from "./compoents/TableProduct/TableProducts";
 //
 function App() {
   return (
-    <div className="product-crm" style={{ border: "1vmin solid #55bef0" }}>
-      <div className="pt-5 row">
-        <div className="col-12 p-0">
-          <TableProducts></TableProducts>
-        </div>
-      </div>
+    <div
+      className="application-container"
+      style={{ border: "1vmin solid #87c3e9" }}
+    >
+      <TableProducts></TableProducts>
       {/*  */}
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
     </div>
   );
 }

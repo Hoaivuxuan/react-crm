@@ -173,7 +173,10 @@ const TableProducts = (props) => {
     ];
     return (
       <div className="d-flex justify-content-center">
-        <SplitButton model={items}>
+        <SplitButton
+          model={items}
+          dropdownIcon={<iconify-icon icon="bxs:down-arrow"></iconify-icon>}
+        >
           {/* <span className="p-button-icon p-c bx bxs-down-arrow text-xs"> */}
           {/* <iconify-icon icon="bxs:down-arrow"></iconify-icon> */}
           {/* </span> */}
@@ -213,7 +216,7 @@ const TableProducts = (props) => {
         selectionMode={rowClick ? null : "checkbox"}
         selection={selectedProducts}
         onSelectionChange={(e) => setSelectedProducts(e.value)}
-        //
+        // filter
         filters={tableFilters}
         filterDisplay="menu"
         loading={loading}

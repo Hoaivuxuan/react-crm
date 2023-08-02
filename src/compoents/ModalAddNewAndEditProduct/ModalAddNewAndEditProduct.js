@@ -14,11 +14,14 @@ import { createUser } from "../../services/UserService";
 const ModalAddNewAndEditProduct = (props) => {
   // props
   const { showModal, handleClose, handleUpdate, rowData } = props;
+  const [isEditMode, setIsEditMode] = useState(false);
   // useEffect
   useEffect(() => {
     if (showModal && rowData) {
+      setIsEditMode(true); // Đánh dấu đang ở chế độ chỉnh sửa
       formik.setValues(rowData);
     } else {
+      setIsEditMode(false); // Đánh dấu đang ở chế độ thêm mới
       formik.resetForm();
     }
   }, [showModal, rowData]);
@@ -39,9 +42,9 @@ const ModalAddNewAndEditProduct = (props) => {
   };
   const formik = useFormik({
     initialValues: {
-      id: "",
-      name: "",
-      productLine: "",
+      id: isEditMode ? rowData?.id : "", // Truyền giá trị id vào nếu đang ở chế độ chỉnh sửa
+      name: isEditMode ? rowData?.name : "",
+      productLine: isEditMode ? rowData?.productLine : "",
     },
     //
     validate: (data) => {
@@ -63,29 +66,35 @@ const ModalAddNewAndEditProduct = (props) => {
     },
     // if validate is accepted => call onSubmit
     onSubmit: (data) => {
-      if (rowData) {
+      // Edit modal
+      if (isEditMode) {
         let productArray = JSON.parse(localStorage.getItem("Product")) || [];
-        // Search for available products in the productArray . array
         const existingProductIndex = productArray.findIndex(
-          (product) => product.id === data.id
+          (product) => product.id === rowData.id
         );
-        console.log(data);
-        if (existingProductIndex === -1) {
-          // If the product is not found, add a new product to the array
-          let newProductArray = [data, ...productArray];
-          localStorage.setItem("Product", JSON.stringify(newProductArray));
-        } else {
-          // If a product is found, update the information of an existing product
-          productArray[existingProductIndex] = data;
+        if (existingProductIndex !== -1) {
+          // Nếu tìm thấy sản phẩm, cập nhật thông tin sản phẩm
+          const isDuplicateId = productArray.some(
+            (product, index) =>
+              index !== existingProductIndex && product.id === data.id
+          );
+
+          if (!isDuplicateId) {
+            productArray[existingProductIndex] = data;
+            localStorage.setItem("Product", JSON.stringify(productArray));
+            toast.current.show({
+              severity: "success",
+              detail: "Lưu thành công",
+            });
+            // handleClose();
+          } else {
+            showError();
+          }
         }
-        // Write the new productArray array to localStorage
-        localStorage.setItem("Product", JSON.stringify(productArray));
-        // Close modal and show success message
-        showSuccess();
-        handleClose(false);
-        // Call the handleUpdate function to update the product list on the interface
         handleUpdate();
-      } else {
+      }
+      // Add new modal
+      else {
         let productArray = JSON.parse(localStorage.getItem("Product"));
         if (productArray == null) {
           let firstProduct = [data];
@@ -101,6 +110,7 @@ const ModalAddNewAndEditProduct = (props) => {
             let newProductArray = [data, ...productArray];
             localStorage.setItem("Product", JSON.stringify(newProductArray));
             //
+            // handleClose(false);
             toast.current.show({
               severity: "success",
               detail: "Lưu thành công",
@@ -110,7 +120,6 @@ const ModalAddNewAndEditProduct = (props) => {
             showError();
           }
         }
-        handleClose(false);
         handleUpdate();
       }
     },

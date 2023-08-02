@@ -62,12 +62,6 @@ const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
                     tabIndex="0"
                   />
                 </div>
-                {/*  */}
-                {/* <div className="p-multiselect-label-container">
-                  <div className="p-multiselect-label p-multiselect-items-label">
-                    Tất cả sản phẩm
-                  </div>
-                </div> */}
                 <MultiSelect
                   style={{ width: "20em" }}
                   options={products}

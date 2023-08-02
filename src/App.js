@@ -8,9 +8,7 @@ function App() {
       className="application-container"
       style={{ border: "1vmin solid #87c3e9" }}
     >
-      <div>
-        <TableProducts></TableProducts>
-      </div>
+      <TableProducts></TableProducts>
     </div>
   );
 }

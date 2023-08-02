@@ -106,7 +106,6 @@ const ModalAddNewAndEditProduct = (props) => {
               detail: "Lưu thành công",
             });
             //
-            
           } else {
             showError();
           }

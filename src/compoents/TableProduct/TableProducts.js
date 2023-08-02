@@ -83,10 +83,12 @@ const TableProducts = (props) => {
   const handleUpdate = () => {
     setUpdateTable((current) => current + 1);
   };
-  //
+  // Toastify
   const toast = useRef(null);
+  // Confirm lock product
   const acceptLock = (rowData) => {
     rowData.isLocked = !rowData.isLocked;
+    console.log("check rowData: ", rowData);
     let productArray = JSON.parse(localStorage.getItem("Product"));
     for (let e of productArray) {
       if (e.id === rowData.id) {
@@ -98,8 +100,8 @@ const TableProducts = (props) => {
     handleUpdate();
     toast.current.show({
       severity: "success",
-      summary: "Success",
-      describe: "thành công",
+      summary: "Lưu thành công",
+      describe: "Lưu thành công",
       life: 3000,
     });
   };
@@ -112,6 +114,7 @@ const TableProducts = (props) => {
     });
   };
   const confirm = (rowData) => {
+    console.log("check error");
     confirmDialog({
       message: rowData.isLocked
         ? 'Bạn có chắc muốn mở "' + rowData.id + '" ?'
@@ -127,19 +130,17 @@ const TableProducts = (props) => {
     });
   };
   //
-  const handleClickConfirm = (rowData) => {
-    confirm(rowData);
-  };
+  // const handleClickConfirm = (rowData) => {
+  //   confirm(rowData);
+  // };
   // column include : lock icon
   const lockIcon = (rowData) => {
     return (
-      <>
-        <Toast ref={toast} />
+      <div>
         <div className="d-flex justify-content-center">
-          <ConfirmDialog />
           <button
             className="p-button p-component p-button-rounded p-button-text ml-1 p-button-icon-only"
-            onClick={() => handleClickConfirm(rowData)} // Thay đổi trạng thái isLocked khi nhấn nút
+            onClick={() => confirm(rowData)} // Thay đổi trạng thái isLocked khi nhấn nút
           >
             {rowData.isLocked ? (
               <span className="p-button-icon p-c bx bx-lock-alt text-danger">
@@ -154,7 +155,7 @@ const TableProducts = (props) => {
             )}
           </button>
         </div>
-      </>
+      </div>
     );
   };
   // button click to Edit
@@ -174,7 +175,7 @@ const TableProducts = (props) => {
       <div className="d-flex justify-content-center">
         <SplitButton model={items}>
           {/* <span className="p-button-icon p-c bx bxs-down-arrow text-xs"> */}
-            {/* <iconify-icon icon="bxs:down-arrow"></iconify-icon> */}
+          {/* <iconify-icon icon="bxs:down-arrow"></iconify-icon> */}
           {/* </span> */}
         </SplitButton>
       </div>
@@ -186,6 +187,8 @@ const TableProducts = (props) => {
       style={{ height: "calc(100vh - 17px)" }}
     >
       {/* product data table */}
+      <Toast ref={toast} />
+      <ConfirmDialog />
       <DataTable
         size="small"
         value={listProducts}

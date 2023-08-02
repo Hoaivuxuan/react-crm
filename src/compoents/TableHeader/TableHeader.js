@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { FilterMatchMode, FilterOperator } from "primereact/api";
+import { MultiSelect } from "primereact/multiselect";
 // import file
 import ModalAddNewAndEditProduct from "../ModalAddNewAndEditProduct/ModalAddNewAndEditProduct";
 import "./TableHeader.scss";
@@ -25,6 +26,13 @@ const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
     updateFilters(_filters);
     setGlobalFilterValue(value);
   };
+  //
+  const products = [
+    { name: "Mã", code: "NY" },
+    { name: "Tên", code: "RM" },
+    { name: "Mô tả", code: "LDN" },
+    { name: "Dòng sản phẩm", code: "IST" },
+  ];
   //
   return (
     <div className="flex">
@@ -54,14 +62,20 @@ const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
                     tabIndex="0"
                   />
                 </div>
-                <div className="p-multiselect-label-container">
+                {/*  */}
+                {/* <div className="p-multiselect-label-container">
                   <div className="p-multiselect-label p-multiselect-items-label">
                     Tất cả sản phẩm
                   </div>
-                </div>
-                <div className="p-multiselect-trigger">
-                  <span className="p-multiselect-trigger-icon p-c pi pi-chevron-down"></span>
-                </div>
+                </div> */}
+                <MultiSelect
+                  style={{ width: "20em" }}
+                  options={products}
+                  optionLabel="name"
+                  placeholder="Tất cả sản phẩm"
+                  maxSelectedLabels={3}
+                />
+                {/*  */}
               </div>
               <button className="p-button p-component p-button-outlined p-button-sm p-button-info ml-2 p-button-icon-only">
                 <span className="p-button-icon p-c bx bxs-pin">
@@ -82,12 +96,12 @@ const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
               <span className="link-button">Tạo mới</span>
             </span>
           </Button>
-          <Button className="p-button p-component p-button-text  border-1 border-solid p-2 border-400 border-noround border-round-left-sm">
+          <Button className="p-button p-component p-button-text  border-1 border-solid p-2 border-400 border-noround border-round-left-sm ml-1">
             <span className="p-button-label p-c">
               <span className="link-button">Export</span>
             </span>
           </Button>
-          <Button className="p-button p-component p-button-text  border-1 border-solid p-2 border-400 border-noround border-round-left-sm">
+          <Button className="p-button p-component p-button-text  border-1 border-solid p-2 border-400 border-noround border-round-left-sm ml-1">
             <span className="p-button-label p-c">
               <span className="link-button">Giao diện in</span>
             </span>
@@ -99,13 +113,41 @@ const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
             <InputText
               value={globalFilterValue}
               onChange={onGlobalFilterChange}
-              placeholder="Tìm kiếm"
+              placeholder="Tìm kiếm..."
             />
           </span>
+          {/*  */}
+          <div
+            className="p-splitbutton p-component p-button-outlined p-button-info border-noround action-wrapper-split ml-2"
+            id="pr_id_2"
+          >
+            <button
+              type="button"
+              className="p-button p-component p-button-outlined text-color-secondary border-round-sm p-2 p-button-icon-only"
+              aria-expanded="false"
+              aria-haspopup="true"
+            >
+              <span className="p-button-icon p-c bx bx-table text-xl">
+                <iconify-icon icon="bx:table"></iconify-icon>
+              </span>
+            </button>
+          </div>
+          {/*  */}
+          <button className="p-button p-component p-button-outlined text-color-secondary ml-1 p-2 p-button-icon-only">
+            <span className="p-button-icon p-c bx bx-refresh text-xl">
+              <iconify-icon icon="bx:refresh"></iconify-icon>
+            </span>
+          </button>
+          {/*  */}
+          <button className="p-button p-component p-button-outlined text-color-secondary ml-1 p-2 p-button-icon-only">
+            <span className="p-button-icon p-c bx bx-pencil text-xl">
+              <iconify-icon icon="bx:pencil"></iconify-icon>
+            </span>
+          </button>
         </div>
       </div>
       <ModalAddNewAndEditProduct
-        show={isShowModalAdd_EditProduct}
+        showModal={isShowModalAdd_EditProduct}
         handleClose={handleClose}
         handleUpdate={handleUpdate}
       ></ModalAddNewAndEditProduct>

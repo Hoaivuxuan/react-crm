@@ -7,6 +7,8 @@ import { Button } from "primereact/button";
 import { FilterMatchMode, FilterOperator } from "primereact/api";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
+import { SplitButton } from "primereact/splitbutton";
+
 // import component
 import "./TableProduct.scss";
 import TableHeader from "../TableHeader/TableHeader";
@@ -55,6 +57,20 @@ const TableProducts = (props) => {
     if (storedData) {
       setListProducts(JSON.parse(storedData));
       setLoading(false);
+    } else {
+      let data = [
+        {
+          id: "Test",
+          name: "Chakra Test",
+          describe: "Product Test",
+          warrantyPeriod: 2334324,
+          solutionType: "Test",
+          productLine: "Test",
+          warrantyType: "Test",
+        },
+      ];
+
+      localStorage.setItem("Product", JSON.stringify(data));
     }
   }, [updateTable]);
   // Function Edit Product Information
@@ -73,7 +89,7 @@ const TableProducts = (props) => {
     rowData.isLocked = !rowData.isLocked;
     let productArray = JSON.parse(localStorage.getItem("Product"));
     for (let e of productArray) {
-      if (e.id == rowData.id) {
+      if (e.id === rowData.id) {
         e.isLocked = rowData.isLocked;
         break;
       }
@@ -83,7 +99,7 @@ const TableProducts = (props) => {
     toast.current.show({
       severity: "success",
       summary: "Success",
-      detail: "thành công",
+      describe: "thành công",
       life: 3000,
     });
   };
@@ -92,14 +108,16 @@ const TableProducts = (props) => {
     toast.current.show({
       severity: "warn",
       summary: "Rejected",
-      detail: "You have rejected",
+      describe: "You have rejected",
     });
   };
   const confirm = (rowData) => {
     confirmDialog({
       message: rowData.isLocked
-        ? 'bạn có muốn mở khóa "' + rowData.id + '" ?'
-        : 'bạn có muốn khóa "' + rowData.id + '" ?',
+        ? 'Bạn có chắc muốn mở "' + rowData.id + '" ?'
+        : 'Bạn có chắc muốn khóa "' +
+          rowData.id +
+          '"? Giá của sản phẩm không thể thao tác sau khi khóa!',
       header: "Xác nhận",
       icon: "pi pi-exclamation-triangle",
       accept: () => {
@@ -110,9 +128,7 @@ const TableProducts = (props) => {
   };
   //
   const handleClickConfirm = (rowData) => {
-    if (rowData) {
-      confirm(rowData);
-    }
+    confirm(rowData);
   };
   // column include : lock icon
   const lockIcon = (rowData) => {
@@ -126,7 +142,7 @@ const TableProducts = (props) => {
             onClick={() => handleClickConfirm(rowData)} // Thay đổi trạng thái isLocked khi nhấn nút
           >
             {rowData.isLocked ? (
-              <span className="p-button-icon p-c bx bx-lock-alt text-red">
+              <span className="p-button-icon p-c bx bx-lock-alt text-danger">
                 {/* Hiển thị icon khóa khi isLocked = true */}
                 <iconify-icon icon="bx:lock-alt"></iconify-icon>
               </span>
@@ -143,13 +159,24 @@ const TableProducts = (props) => {
   };
   // button click to Edit
   const buttonEdit = (rowData) => {
+    const handleEditProductWithData = () => {
+      handleEditProduct(rowData);
+    };
+
+    const items = [
+      {
+        label: "Sửa",
+        icon: "pi pi-pencil",
+        command: handleEditProductWithData,
+      },
+    ];
     return (
       <div className="d-flex justify-content-center">
-        <Button
-          label="Edit"
-          aria-label="Submit"
-          onClick={() => handleEditProduct(rowData)}
-        />
+        <SplitButton model={items}>
+          {/* <span className="p-button-icon p-c bx bxs-down-arrow text-xs"> */}
+            {/* <iconify-icon icon="bxs:down-arrow"></iconify-icon> */}
+          {/* </span> */}
+        </SplitButton>
       </div>
     );
   };
@@ -168,7 +195,9 @@ const TableProducts = (props) => {
         rowsPerPageOptions={[20, 25, 50, 100]}
         paginatorTemplate="RowsPerPageDropdown CurrentPageReport  FirstPageLink PrevPageLink  NextPageLink LastPageLink"
         dataKey="id"
-        emptyMessage="Không có dữ liệu"
+        emptyMessage={
+          <p className="d-flex justify-content-center">Không có dữ liệu</p>
+        }
         header={
           <TableHeader
             handleUpdate={handleUpdate}
@@ -206,7 +235,7 @@ const TableProducts = (props) => {
       </DataTable>
       {/* modal edit and add new product */}
       <ModalAddNewAndEditProduct
-        show={isShowModalAdd_EditProduct}
+        showModal={isShowModalAdd_EditProduct}
         handleClose={handleClose}
         handleUpdate={handleUpdate}
         rowData={dataProductEdit}

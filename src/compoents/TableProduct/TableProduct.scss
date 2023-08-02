@@ -29,3 +29,13 @@
     white-space: nowrap;
     background-color: #fff;
 }
+
+.p-splitbutton-defaultbutton {
+    display: none !important;
+}
+
+.p-splitbutton-menubutton {
+    padding: 0 !important;
+    border: 0 !important;
+    background-color: #009688 !important;
+}

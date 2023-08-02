@@ -13,15 +13,15 @@ import { createUser } from "../../services/UserService";
 //
 const ModalAddNewAndEditProduct = (props) => {
   // props
-  const { show, handleClose, handleUpdate, rowData } = props;
+  const { showModal, handleClose, handleUpdate, rowData } = props;
   // useEffect
   useEffect(() => {
-    if (show && rowData) {
+    if (showModal && rowData) {
       formik.setValues(rowData);
     } else {
       formik.resetForm();
     }
-  }, [show, rowData]);
+  }, [showModal, rowData]);
 
   // Toastify
   const toast = useRef(null);
@@ -81,8 +81,8 @@ const ModalAddNewAndEditProduct = (props) => {
         // Write the new productArray array to localStorage
         localStorage.setItem("Product", JSON.stringify(productArray));
         // Close modal and show success message
-        handleClose(false);
         showSuccess();
+        handleClose(false);
         // Call the handleUpdate function to update the product list on the interface
         handleUpdate();
       } else {
@@ -100,12 +100,18 @@ const ModalAddNewAndEditProduct = (props) => {
           if (checkCode) {
             let newProductArray = [data, ...productArray];
             localStorage.setItem("Product", JSON.stringify(newProductArray));
-            handleClose(false);
-            showSuccess();
+            //
+            toast.current.show({
+              severity: "success",
+              detail: "Lưu thành công",
+            });
+            //
+            
           } else {
             showError();
           }
         }
+        handleClose(false);
         handleUpdate();
       }
     },
@@ -159,7 +165,7 @@ const ModalAddNewAndEditProduct = (props) => {
             {rowData ? "Chỉnh sửa sản phẩm" : "Thêm mới sản phẩm"}
           </div>
         }
-        visible={show}
+        visible={showModal}
         onHide={handleClose}
         style={{ width: "50vw" }}
         breakpoints={{ "960px": "75vw", "641px": "100vw" }}
@@ -256,6 +262,7 @@ const ModalAddNewAndEditProduct = (props) => {
                       name="warrantyPeriod"
                       value={formik.values.warrantyPeriod}
                       onChange={formik.handleChange}
+                      type="number"
                     />
                   </span>
                 </div>

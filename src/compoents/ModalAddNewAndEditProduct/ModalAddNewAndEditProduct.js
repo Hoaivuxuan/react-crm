@@ -52,7 +52,7 @@ const ModalAddNewAndEditProduct = (props) => {
 
       if (!data.id) {
         errors.id = "Mã không được trống";
-      } else if (/[!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?]+/.test(data.id)) {
+      } else if (/[!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/? ]+/.test(data.id)) {
         errors.id = 'Mã chỉ cho phép chữ, số, dấu "-"và dấu "_"';
       }
       if (!data.name) {
@@ -82,10 +82,7 @@ const ModalAddNewAndEditProduct = (props) => {
           if (!isDuplicateId) {
             productArray[existingProductIndex] = data;
             localStorage.setItem("Product", JSON.stringify(productArray));
-            toast.current.show({
-              severity: "success",
-              detail: "Lưu thành công",
-            });
+            showSuccess();
             // handleClose();
           } else {
             showError();
@@ -111,10 +108,7 @@ const ModalAddNewAndEditProduct = (props) => {
             localStorage.setItem("Product", JSON.stringify(newProductArray));
             //
             // handleClose(false);
-            toast.current.show({
-              severity: "success",
-              detail: "Lưu thành công",
-            });
+            showSuccess();
             //
           } else {
             showError();

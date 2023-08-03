@@ -1,14 +1,16 @@
 // import lib
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { FilterMatchMode, FilterOperator } from "primereact/api";
 import { MultiSelect } from "primereact/multiselect";
+import { SplitButton } from "primereact/splitbutton";
+import { Toast } from "primereact/toast";
+import { Column } from "primereact/column";
 // import file
 import ModalAddNewAndEditProduct from "../ModalAddNewAndEditProduct/ModalAddNewAndEditProduct";
 import "./TableHeader.scss";
 //
-const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
+const TableHeader = ({ filters, updateFilters, handleUpdate, columnData }) => {
   const [isShowModalAdd_EditProduct, setIsShowModalAdd_EditProduct] =
     useState();
   //
@@ -27,15 +29,103 @@ const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
     setGlobalFilterValue(value);
   };
   //
-  const products = [
-    { name: "Mã", code: "NY" },
-    { name: "Tên", code: "RM" },
-    { name: "Mô tả", code: "LDN" },
-    { name: "Dòng sản phẩm", code: "IST" },
+  const toast = useRef(null);
+  const items = [
+    {
+      label: "Table",
+      icon: <iconify-icon icon="bx:table"></iconify-icon>,
+      command: () => {
+        toast.current.show({
+          severity: "success",
+          summary: "Updated",
+          detail: "Table style has been changed!",
+        });
+      },
+    },
+    {
+      label: "Kanban",
+      icon: <iconify-icon icon="bx:table"></iconify-icon>,
+      command: () => {
+        toast.current.show({
+          severity: "success",
+          summary: "Updated",
+          detail: "Table style has been changed!",
+        });
+      },
+    },
+    {
+      label: "Split View",
+      icon: <iconify-icon icon="bx:table"></iconify-icon>,
+      command: () => {
+        toast.current.show({
+          severity: "success",
+          summary: "Updated",
+          detail: "Table style has been changed!",
+        });
+      },
+    },
   ];
+  // column
+  const linkColumn = (rowData) => {
+    // Define the link
+    const linkURL = `/`;
+
+    return (
+      <a href={linkURL} style={{ textDecoration: "none", color: "#009688" }}>
+        {rowData.id}
+      </a>
+    );
+  };
   //
+  const columns = [
+    { field: "id", header: "Mã" },
+    { field: "name", header: "Tên" },
+    { field: "describe", header: "Mô tả" },
+    { field: "productLine", header: "Dòng sản phẩm" },
+  ];
+  useEffect(() => {
+    columnData(renderColumns(columns));
+  }, []);
+  const [selectedColumns, setSelectedColumns] = useState(columns);
+  const onColumnToggle = (event) => {
+    let selectedColumns = event.value;
+    let orderedSelectedColumns = columns.filter((col) =>
+      selectedColumns.some((sCol) => sCol.field === col.field)
+    );
+    setSelectedColumns(orderedSelectedColumns);
+    columnData(renderColumns(selectedColumns));
+  };
+  const renderColumns = (selectedColumns) => {
+    console.log(selectedColumns);
+    let cols = selectedColumns.map((col) => {
+      if (col.field === "id") {
+        return (
+          <Column
+            key={col.field}
+            field={col.field}
+            header={col.header}
+            body={linkColumn} // Thêm body vào cột id để render link
+          />
+        );
+      } else if (col.field === "name") {
+        return (
+          <Column
+            key={col.field}
+            field={col.field}
+            header={col.header}
+            body={linkColumn} // Thêm body vào cột name để render link
+          />
+        );
+      } else {
+        return <Column key={col.field} field={col.field} header={col.header} />;
+      }
+    });
+    return cols;
+  };
+  // main
   return (
     <div className="flex">
+      <Toast ref={toast}></Toast>
       <div className="crm-toolbar-left-wrapper">
         <div className="filter-wrapper flex mb-4 justify-content-center align-items-center">
           <div
@@ -64,10 +154,15 @@ const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
                 </div>
                 <MultiSelect
                   style={{ width: "20em" }}
-                  options={products}
-                  optionLabel="name"
+                  //
+                  value={selectedColumns}
+                  options={columns}
+                  onChange={onColumnToggle}
+                  optionLabel="header"
+                  //
                   placeholder="Tất cả sản phẩm"
-                  maxSelectedLabels={3}
+                  maxSelectedLabels={4}
+                  //
                 />
                 {/*  */}
               </div>
@@ -85,59 +180,75 @@ const TableHeader = ({ filters, updateFilters, handleUpdate }) => {
           <Button
             className="p-button p-component p-button-text  border-1 border-solid p-2 border-400 border-noround border-round-left-sm"
             onClick={() => setIsShowModalAdd_EditProduct(true)}
+            tooltip="Tạo mới"
+            tooltipOptions={{ position: "top" }}
           >
             <span className="p-button-label p-c">
               <span className="link-button">Tạo mới</span>
             </span>
           </Button>
-          <Button className="p-button p-component p-button-text  border-1 border-solid p-2 border-400 border-noround border-round-left-sm ml-1">
+          <Button
+            className="p-button p-component p-button-text  border-1 border-solid p-2 border-400 border-noround border-round-left-sm ml-1"
+            tooltip="Export"
+            tooltipOptions={{ position: "top" }}
+          >
             <span className="p-button-label p-c">
               <span className="link-button">Export</span>
             </span>
           </Button>
-          <Button className="p-button p-component p-button-text  border-1 border-solid p-2 border-400 border-noround border-round-left-sm ml-1">
+          <Button
+            className="p-button p-component p-button-text  border-1 border-solid p-2 border-400 border-noround border-round-left-sm ml-1"
+            tooltip="Giao diện in"
+            tooltipOptions={{ position: "top" }}
+          >
             <span className="p-button-label p-c">
               <span className="link-button">Giao diện in</span>
             </span>
           </Button>
         </div>
-        <div className="search-wrapper flex justify-content-end align-items-center">
-          <span className="p-input-icon-left">
+        <div className="search-wrapper flex justify-content-end align-items-center mb-2">
+          <span className="p-input-icon-left mr-2 w-25rem">
             <i className="pi pi-search" />
             <InputText
+              className="w-25rem"
               value={globalFilterValue}
               onChange={onGlobalFilterChange}
               placeholder="Tìm kiếm..."
             />
           </span>
           {/*  */}
-          <div
-            className="p-splitbutton p-component p-button-outlined p-button-info border-noround action-wrapper-split ml-2"
-            id="pr_id_2"
-          >
-            <button
-              type="button"
-              className="p-button p-component p-button-outlined text-color-secondary border-round-sm p-2 p-button-icon-only"
-              aria-expanded="false"
-              aria-haspopup="true"
-            >
+          <SplitButton
+            model={items}
+            // className="p-button-outlined p-button-secondary mr-2 mb-2"
+            className="p-button p-component p-button-outlined text-color-secondary ml-1 p-2 p-button-icon-only"
+            dropdownIcon={
               <span className="p-button-icon p-c bx bx-table text-xl">
                 <iconify-icon icon="bx:table"></iconify-icon>
               </span>
-            </button>
-          </div>
+            }
+            tooltip="Giao diện xem"
+            tooltipOptions={{ position: "top" }}
+          ></SplitButton>
           {/*  */}
-          <button className="p-button p-component p-button-outlined text-color-secondary ml-1 p-2 p-button-icon-only">
+          <Button
+            className="p-button p-component p-button-outlined text-color-secondary ml-1 p-2 p-button-icon-only"
+            tooltip="Tải lại trang"
+            tooltipOptions={{ position: "top" }}
+          >
             <span className="p-button-icon p-c bx bx-refresh text-xl">
               <iconify-icon icon="bx:refresh"></iconify-icon>
             </span>
-          </button>
+          </Button>
           {/*  */}
-          <button className="p-button p-component p-button-outlined text-color-secondary ml-1 p-2 p-button-icon-only">
+          <Button
+            className="p-button p-component p-button-outlined text-color-secondary ml-1 p-2 p-button-icon-only"
+            tooltip="Chỉnh sửa danh sách xem"
+            tooltipOptions={{ position: "top" }}
+          >
             <span className="p-button-icon p-c bx bx-pencil text-xl">
               <iconify-icon icon="bx:pencil"></iconify-icon>
             </span>
-          </button>
+          </Button>
         </div>
       </div>
       <ModalAddNewAndEditProduct

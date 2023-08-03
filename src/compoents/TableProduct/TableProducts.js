@@ -129,18 +129,16 @@ const TableProducts = (props) => {
       reject,
     });
   };
-  //
-  // const handleClickConfirm = (rowData) => {
-  //   confirm(rowData);
-  // };
   // column include : lock icon
   const lockIcon = (rowData) => {
     return (
       <div>
         <div className="d-flex justify-content-center">
-          <button
+          <Button
             className="p-button p-component p-button-rounded p-button-text ml-1 p-button-icon-only"
             onClick={() => confirm(rowData)} // Thay đổi trạng thái isLocked khi nhấn nút
+            tooltip="Đóng"
+            tooltipOptions={{ position: "top" }}
           >
             {rowData.isLocked ? (
               <span className="p-button-icon p-c bx bx-lock-alt text-danger">
@@ -153,7 +151,7 @@ const TableProducts = (props) => {
                 <iconify-icon icon="bx:lock-open-alt"></iconify-icon>
               </span>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -167,23 +165,41 @@ const TableProducts = (props) => {
     const items = [
       {
         label: "Sửa",
-        icon: "pi pi-pencil",
+        icon: (
+          <span class="p-menuitem-icon bx bx-trash text-red">
+            <iconify-icon icon="bx:pencil"></iconify-icon>
+          </span>
+        ),
         command: handleEditProductWithData,
+      },
+      {
+        label: "Xóa",
+        icon: (
+          <span class="p-menuitem-icon bx bx-trash text-danger">
+            <iconify-icon icon="bx:bx-trash"></iconify-icon>
+          </span>
+        ),
       },
     ];
     return (
       <div className="d-flex justify-content-center">
         <SplitButton
           model={items}
-          dropdownIcon={<iconify-icon icon="bxs:down-arrow"></iconify-icon>}
-        >
-          {/* <span className="p-button-icon p-c bx bxs-down-arrow text-xs"> */}
-          {/* <iconify-icon icon="bxs:down-arrow"></iconify-icon> */}
-          {/* </span> */}
-        </SplitButton>
+          dropdownIcon={
+            <iconify-icon
+              icon="bxs:down-arrow"
+              style={{ color: "gray" }}
+            ></iconify-icon>
+          }
+          tooltip="Hành động"
+          tooltipOptions={{ position: "top" }}
+        ></SplitButton>
       </div>
     );
   };
+  //
+  const [columnDataProduct, setColumnDataProduct] = useState([]);
+  //
   return (
     <div
       className="fixed-table-container"
@@ -204,11 +220,13 @@ const TableProducts = (props) => {
         emptyMessage={
           <p className="d-flex justify-content-center">Không có dữ liệu</p>
         }
+        // header
         header={
           <TableHeader
             handleUpdate={handleUpdate}
             filters={tableFilters}
             updateFilters={updateTableFilters}
+            columnData={setColumnDataProduct}
           />
         }
         scrollable
@@ -232,10 +250,9 @@ const TableProducts = (props) => {
           selectionMode="multiple"
           headerStyle={{ width: "3rem" }}
         ></Column>
-        <Column field="id" header="Mã" dataType="text" />
-        <Column field="name" header="Tên" dataType="text" />
-        <Column field="describe" header="Mô tả" dataType="text" />
-        <Column field="productLine" header="Dòng sản phẩm" dataType="text" />
+        {/* column toggle */}
+        {columnDataProduct}
+        {/*  */}
         <Column className="p-0" body={lockIcon} />
         <Column body={buttonEdit} />
       </DataTable>

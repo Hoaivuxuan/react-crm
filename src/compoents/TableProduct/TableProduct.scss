@@ -11,6 +11,7 @@
 .p-datatable-thead {
     border-width: 1px 1px 1px 1px;
     border-radius: 7px 7px 0 0;
+    color: black !important;
 }
 
 .text-green {
@@ -37,12 +38,24 @@
 .p-splitbutton-menubutton {
     padding: 0 !important;
     border: 0 !important;
-    background-color: #009688 !important;
+    background-color: white !important;
+    // color: #666666;
 }
 
 .p-datatable.p-datatable-gridlines .p-paginator-bottom {
+    display: fixed;
     background: #f5f5f5 !important;
     border: 1px solid #c6c6c6 !important;
     border-width: 1px 0 !important;
     padding: 0 8px !important;
+    //
+
+}
+
+.bx-table {
+    color: #666666;
+}
+
+.fixed-table-container {
+    font-size: 14px !important;
 }

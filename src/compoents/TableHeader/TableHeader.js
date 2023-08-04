@@ -1,16 +1,17 @@
 // import lib
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { MultiSelect } from "primereact/multiselect";
 import { SplitButton } from "primereact/splitbutton";
-import { Toast } from "primereact/toast";
 import { Column } from "primereact/column";
 // import file
 import ModalAddNewAndEditProduct from "../ModalAddNewAndEditProduct/ModalAddNewAndEditProduct";
 import "./TableHeader.scss";
+import { useToast } from "../../App";
 //
 const TableHeader = ({ filters, updateFilters, handleUpdate, columnData }) => {
+  const { showSuccess } = useToast();
   const [isShowModalAdd_EditProduct, setIsShowModalAdd_EditProduct] =
     useState();
   //
@@ -29,39 +30,26 @@ const TableHeader = ({ filters, updateFilters, handleUpdate, columnData }) => {
     setGlobalFilterValue(value);
   };
   //
-  const toast = useRef(null);
   const items = [
     {
       label: "Table",
       icon: <iconify-icon icon="bx:table"></iconify-icon>,
       command: () => {
-        toast.current.show({
-          severity: "success",
-          summary: "Updated",
-          detail: "Table style has been changed!",
-        });
+        showSuccess();
       },
     },
     {
       label: "Kanban",
       icon: <iconify-icon icon="bx:table"></iconify-icon>,
       command: () => {
-        toast.current.show({
-          severity: "success",
-          summary: "Updated",
-          detail: "Table style has been changed!",
-        });
+        showSuccess();
       },
     },
     {
       label: "Split View",
       icon: <iconify-icon icon="bx:table"></iconify-icon>,
       command: () => {
-        toast.current.show({
-          severity: "success",
-          summary: "Updated",
-          detail: "Table style has been changed!",
-        });
+        showSuccess();
       },
     },
   ];
@@ -125,7 +113,6 @@ const TableHeader = ({ filters, updateFilters, handleUpdate, columnData }) => {
   // main
   return (
     <div className="flex">
-      <Toast ref={toast}></Toast>
       <div className="crm-toolbar-left-wrapper">
         <div className="filter-wrapper flex mb-4 justify-content-center align-items-center">
           <div

@@ -1,17 +1,16 @@
 // import library
-import { useState, useRef, useEffect } from "react";
-import { Button } from "primereact/button";
+import { useState, useRef, useEffect, createContext, useContext } from "react";
 import { Dialog } from "primereact/dialog";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext";
 import { useFormik } from "formik";
-import { Toast } from "primereact/toast";
-import { classNames } from "primereact/utils";
+//
+import { useToast } from "../../App";
 import "./ModalAddNewAndEditProduct.scss";
 // import component
-import { createUser } from "../../services/UserService";
-//
 const ModalAddNewAndEditProduct = (props) => {
+  //
+  const { showSuccess, showError } = useToast();
   // props
   const { showModal, handleClose, handleUpdate, rowData } = props;
   const [isEditMode, setIsEditMode] = useState(false);
@@ -25,21 +24,7 @@ const ModalAddNewAndEditProduct = (props) => {
       formik.resetForm();
     }
   }, [showModal, rowData]);
-
-  // Toastify
-  const toast = useRef(null);
-  const showSuccess = () => {
-    toast.current.show({
-      severity: "success",
-      detail: "Lưu thành công",
-    });
-  };
-  const showError = () => {
-    toast.current.show({
-      severity: "error",
-      detail: "Id đã tồn tại, xin hãy chọn mã khác",
-    });
-  };
+  // formik
   const formik = useFormik({
     initialValues: {
       id: isEditMode ? rowData?.id : "", // Truyền giá trị id vào nếu đang ở chế độ chỉnh sửa
@@ -52,7 +37,7 @@ const ModalAddNewAndEditProduct = (props) => {
 
       if (!data.id) {
         errors.id = "Mã không được trống";
-      } else if (/[!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/? ]+/.test(data.id)) {
+      } else if (/[!@#$%^&*()+\-=[\]{};':"\\|,.<>/? ]+/.test(data.id)) {
         errors.id = 'Mã chỉ cho phép chữ, số, dấu "-"và dấu "_"';
       }
       if (!data.name) {
@@ -82,8 +67,8 @@ const ModalAddNewAndEditProduct = (props) => {
           if (!isDuplicateId) {
             productArray[existingProductIndex] = data;
             localStorage.setItem("Product", JSON.stringify(productArray));
+            handleClose(false);
             showSuccess();
-            // handleClose();
           } else {
             showError();
           }
@@ -107,7 +92,7 @@ const ModalAddNewAndEditProduct = (props) => {
             let newProductArray = [data, ...productArray];
             localStorage.setItem("Product", JSON.stringify(newProductArray));
             //
-            // handleClose(false);
+            handleClose(false);
             showSuccess();
             //
           } else {
@@ -173,7 +158,6 @@ const ModalAddNewAndEditProduct = (props) => {
         breakpoints={{ "960px": "75vw", "641px": "100vw" }}
         footer={footerButton}
       >
-        <Toast ref={toast} />
         <form
           id="my-form"
           className="p-fluid fluid formgrid grid"

@@ -10,9 +10,12 @@ import { Toast } from "primereact/toast";
 import { SplitButton } from "primereact/splitbutton";
 
 // import component
+import { toastState } from "../../App";
 import "./TableProduct.scss";
 import TableHeader from "../TableHeader/TableHeader";
 import ModalAddNewAndEditProduct from "../ModalAddNewAndEditProduct/ModalAddNewAndEditProduct";
+//
+
 //
 const TableProducts = (props) => {
   // define useState
@@ -28,7 +31,6 @@ const TableProducts = (props) => {
   const [rowClick, setRowClick] = useState(true);
   const [selectedProducts, setSelectedProducts] = useState(null);
   const [dataProductEdit, setDataProductEdit] = useState({});
-  const [isLocked, setIsLocked] = useState(false);
   // filters
   const [tableFilters, setTableFilters] = useState({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -85,6 +87,18 @@ const TableProducts = (props) => {
   };
   // Toastify
   const toast = useRef(null);
+  const showSuccess = () => {
+    toast.current.show({
+      severity: "success",
+      detail: "Lưu thành công",
+    });
+  };
+  const showError = () => {
+    toast.current.show({
+      severity: "error",
+      detail: "Id đã tồn tại, xin hãy chọn mã khác",
+    });
+  };
   // Confirm lock product
   const acceptLock = (rowData) => {
     rowData.isLocked = !rowData.isLocked;
@@ -98,12 +112,7 @@ const TableProducts = (props) => {
     }
     localStorage.setItem("Product", JSON.stringify(productArray));
     handleUpdate();
-    toast.current.show({
-      severity: "success",
-      summary: "Lưu thành công",
-      describe: "Lưu thành công",
-      life: 3000,
-    });
+    showSuccess();
   };
 
   const reject = () => {
@@ -201,69 +210,71 @@ const TableProducts = (props) => {
   const [columnDataProduct, setColumnDataProduct] = useState([]);
   //
   return (
-    <div
-      className="fixed-table-container"
-      style={{ height: "calc(100vh - 17px)" }}
-    >
-      {/* product data table */}
-      <Toast ref={toast} />
-      <ConfirmDialog />
-      <DataTable
-        size="small"
-        value={listProducts}
-        showGridlines
-        paginator
-        rows={20}
-        rowsPerPageOptions={[20, 25, 50, 100]}
-        paginatorTemplate="RowsPerPageDropdown CurrentPageReport  FirstPageLink PrevPageLink  NextPageLink LastPageLink"
-        dataKey="id"
-        emptyMessage={
-          <p className="d-flex justify-content-center">Không có dữ liệu</p>
-        }
-        // header
-        header={
-          <TableHeader
-            handleUpdate={handleUpdate}
-            filters={tableFilters}
-            updateFilters={updateTableFilters}
-            columnData={setColumnDataProduct}
-          />
-        }
-        scrollable
-        scrollHeight="flex"
-        selectionMode={rowClick ? null : "checkbox"}
-        selection={selectedProducts}
-        onSelectionChange={(e) => setSelectedProducts(e.value)}
-        // filter
-        filters={tableFilters}
-        filterDisplay="menu"
-        loading={loading}
-        responsiveLayout="scroll"
-        globalFilterFields={["id", "name", "productLine"]}
-        currentPageReportTemplate="{first} - {last} of {totalRecords} "
+    <toastState.Provider value={{ showSuccess, showError }}>
+      <div
+        className="fixed-table-container"
+        style={{ height: "calc(100vh - 17px)" }}
       >
-        <Column
-          body={(_, { rowIndex }) => rowIndex + 1}
-          bodyClassName={"p-0 text-center"}
-        />
-        <Column
-          selectionMode="multiple"
-          headerStyle={{ width: "3rem" }}
-        ></Column>
-        {/* column toggle */}
-        {columnDataProduct}
-        {/*  */}
-        <Column className="p-0" body={lockIcon} />
-        <Column body={buttonEdit} />
-      </DataTable>
-      {/* modal edit and add new product */}
-      <ModalAddNewAndEditProduct
-        showModal={isShowModalAdd_EditProduct}
-        handleClose={handleClose}
-        handleUpdate={handleUpdate}
-        rowData={dataProductEdit}
-      ></ModalAddNewAndEditProduct>
-    </div>
+        {/* product data table */}
+        <Toast ref={toast} />
+        <ConfirmDialog />
+        <DataTable
+          size="small"
+          value={listProducts}
+          showGridlines
+          paginator
+          rows={20}
+          rowsPerPageOptions={[20, 25, 50, 100]}
+          paginatorTemplate="RowsPerPageDropdown CurrentPageReport  FirstPageLink PrevPageLink  NextPageLink LastPageLink"
+          dataKey="id"
+          emptyMessage={
+            <p className="d-flex justify-content-center">Không có dữ liệu</p>
+          }
+          // header
+          header={
+            <TableHeader
+              handleUpdate={handleUpdate}
+              filters={tableFilters}
+              updateFilters={updateTableFilters}
+              columnData={setColumnDataProduct}
+            />
+          }
+          scrollable
+          scrollHeight="flex"
+          selectionMode={rowClick ? null : "checkbox"}
+          selection={selectedProducts}
+          onSelectionChange={(e) => setSelectedProducts(e.value)}
+          // filter
+          filters={tableFilters}
+          filterDisplay="menu"
+          loading={loading}
+          responsiveLayout="scroll"
+          globalFilterFields={["id", "name", "productLine"]}
+          currentPageReportTemplate="{first} - {last} of {totalRecords} "
+        >
+          <Column
+            body={(_, { rowIndex }) => rowIndex + 1}
+            bodyClassName={"p-0 text-center"}
+          />
+          <Column
+            selectionMode="multiple"
+            headerStyle={{ width: "3rem" }}
+          ></Column>
+          {/* column toggle */}
+          {columnDataProduct}
+          {/*  */}
+          <Column className="p-0" body={lockIcon} />
+          <Column body={buttonEdit} />
+        </DataTable>
+        {/* modal edit and add new product */}
+        <ModalAddNewAndEditProduct
+          showModal={isShowModalAdd_EditProduct}
+          handleClose={handleClose}
+          handleUpdate={handleUpdate}
+          rowData={dataProductEdit}
+        ></ModalAddNewAndEditProduct>
+      </div>
+    </toastState.Provider>
   );
 };
 

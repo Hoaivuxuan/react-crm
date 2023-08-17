@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, createContext, useContext } from "react";
 import { Dialog } from "primereact/dialog";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext";
-import { useFormik } from "formik";
+import { useFormik } from "primereact/formik";
 //
 import { useToast } from "../../App";
 import "./ModalAddNewAndEditProduct.scss";
